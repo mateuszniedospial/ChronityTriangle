@@ -1,4 +1,4 @@
-package chronity.triangle.model.music.track;
+package chronity.triangle.model.music.ongoing.track.details;
 
 public enum Category {
     DRUMS,

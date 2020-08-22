@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -28,21 +29,26 @@ public class User implements Dto {
     @Indexed(name = "email_index_unique", unique = true)
     private String email;
 
+    private LocalDate creationDate;
     private boolean isActive;
 
     private List<String> roles;
 
-    private List<String> musicsId;
+    private List<String> artistsId;
 
     public User(String username,
                 String password,
                 String email,
+                LocalDate creationDate,
                 boolean isActive,
-                List<String> roles) {
+                List<String> roles,
+                List<String> artistsId) {
         this.username = username;
         this.password = password;
         this.email = email;
+        this.creationDate = creationDate;
         this.isActive = isActive;
         this.roles = roles;
+        this.artistsId = artistsId;
     }
 }
