@@ -9,7 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -29,7 +29,9 @@ public class User implements Dto {
     @Indexed(name = "email_index_unique", unique = true)
     private String email;
 
-    private LocalDate creationDate;
+    private LocalDateTime creationDate;
+    private LocalDateTime lastUpdateDate;
+
     private boolean isActive;
 
     private List<String> roles;
@@ -39,7 +41,8 @@ public class User implements Dto {
     public User(String username,
                 String password,
                 String email,
-                LocalDate creationDate,
+                LocalDateTime creationDate,
+                LocalDateTime lastUpdateDate,
                 boolean isActive,
                 List<String> roles,
                 List<String> artistsId) {
@@ -47,6 +50,7 @@ public class User implements Dto {
         this.password = password;
         this.email = email;
         this.creationDate = creationDate;
+        this.lastUpdateDate = lastUpdateDate;
         this.isActive = isActive;
         this.roles = roles;
         this.artistsId = artistsId;

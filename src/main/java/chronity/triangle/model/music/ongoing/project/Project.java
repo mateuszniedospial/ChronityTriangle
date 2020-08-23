@@ -7,6 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -20,7 +21,7 @@ public class Project implements Dto {
 
     private String name;
     private String description;
-    private String genre;
+    private List<String> genres;
     //TODO Image file
     private String image;
 
@@ -29,23 +30,34 @@ public class Project implements Dto {
     private LocalDate startDate;
     private LocalDate finishDate;
 
+    private LocalDateTime creationDate;
+    private LocalDateTime lastUpdateDate;
+
     private List<String> tracksId;
+
+    private String creatorArtistId;
 
     public Project(String name,
                    String description,
-                   String genre,
+                   List<String> genres,
                    String image,
                    State state,
                    LocalDate startDate,
                    LocalDate finishDate,
-                   List<String> tracksId) {
+                   LocalDateTime creationDate,
+                   LocalDateTime lastUpdateDate,
+                   List<String> tracksId,
+                   String creatorArtistId) {
         this.name = name;
         this.description = description;
-        this.genre = genre;
+        this.genres = genres;
         this.image = image;
         this.state = state;
         this.startDate = startDate;
         this.finishDate = finishDate;
+        this.creationDate = creationDate;
+        this.lastUpdateDate = lastUpdateDate;
         this.tracksId = tracksId;
+        this.creatorArtistId = creatorArtistId;
     }
 }

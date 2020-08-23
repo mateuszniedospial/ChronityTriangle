@@ -12,13 +12,13 @@ public interface UserService {
     UserDto getByEmail(String email);
 
     UserDto add(User user);
-    UserDto update(User user);
+
+    UserDto updateByUsername(String username, User user);
 
     void delete(User user);
     void deleteByUsername(String username);
 
+    boolean existsById(String id);
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
-
-    boolean isUsernameOrEmailTaken(String username, String email);
 }

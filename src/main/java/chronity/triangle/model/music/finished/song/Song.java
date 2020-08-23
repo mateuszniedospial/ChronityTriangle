@@ -22,7 +22,7 @@ public class Song implements Dto {
     private int number;
     private LocalDate startDate;
     private LocalDate releaseDate;
-    private String genre;
+    private List<String> genres;
 
     private boolean isSingle;
     private boolean isReleased;
@@ -43,7 +43,7 @@ public class Song implements Dto {
                 String description, int number,
                 LocalDate startDate,
                 LocalDate releaseDate,
-                String genre,
+                List<String> genres,
                 boolean isSingle,
                 boolean isReleased,
                 String MP3,
@@ -59,7 +59,7 @@ public class Song implements Dto {
         this.number = number;
         this.startDate = startDate;
         this.releaseDate = releaseDate;
-        this.genre = genre;
+        this.genres = genres;
         this.isSingle = isSingle;
         this.isReleased = isReleased;
         this.MP3 = MP3;

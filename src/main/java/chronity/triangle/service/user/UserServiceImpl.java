@@ -4,13 +4,13 @@ import chronity.triangle.controller.utils.ResponseMsg;
 import chronity.triangle.model.user.User;
 import chronity.triangle.model.user.UserDto;
 import chronity.triangle.repository.user.UserRepository;
-import chronity.triangle.validation.user.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,6 +22,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getAll() {
+        //TODO batches
         return userRepository
                 .findAll()
                 .stream()
@@ -54,10 +55,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto add(User user) {
-//        UserValidator.validate(user);
+        //TODO add user (request body) validation
+        //UserValidator.validate(user);
         if (!isUsernameOrEmailTaken(user.getUsername(), user.getEmail())) {
-            user.setPassword(computePasswordHash(user.getPassword()));
-            return createUserDto(userRepository.insert(user)).orElseThrow(() ->
+            var userToInsert = initializeForInsert(user);
+            return createUserDto(userRepository.insert(userToInsert)).orElseThrow(() ->
                     new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                             new ResponseMsg<>(User.class).internalServerError(ResponseMsg.Method.POST))
             );
@@ -68,13 +70,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto update(User user) {
-//        UserValidator.validate(user);
-        return createUserDto(userRepository.save(user)).orElseThrow(() ->
+    public UserDto updateByUsername(String username, User user) {
+        //TODO add user (request body) validation
+        //UserValidator.validate(user);
+        return Optional.ofNullable(userRepository.findByUsername(username))
+                .flatMap(foundUser -> createUserDto(userRepository.save(createUserForUpdate(foundUser, user))))
+                .orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                        new ResponseMsg<>(User.class).internalServerError(ResponseMsg.Method.PUT)
-                )
-        );
+                        new ResponseMsg<>(User.class).internalServerError(ResponseMsg.Method.PUT))
+                );
     }
 
     @Override
@@ -88,6 +92,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean existsById(String id) {
+        return userRepository.existsById(id);
+    }
+
+    @Override
     public boolean existsByUsername(String username) {
         return userRepository.existsByUsername(username);
     }
@@ -97,8 +106,36 @@ public class UserServiceImpl implements UserService {
         return userRepository.existsByEmail(email);
     }
 
-    public boolean isUsernameOrEmailTaken(String username, String email) {
+    private boolean isUsernameOrEmailTaken(String username, String email) {
         return existsByUsername(username) || existsByEmail(email);
+    }
+
+    private User createUserForUpdate(User foundUser, User requestBody) {
+        if (!isUsernameOrEmailTaken(requestBody.getUsername(), requestBody.getEmail())){
+            return updateEntity(foundUser, requestBody);
+        } else {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Username or/and email passed in request body are already taken. Cannot update the user.");
+        }
+    }
+
+    private User initializeForInsert(User user) {
+        user.setCreationDate(LocalDateTime.now());
+        user.setLastUpdateDate(LocalDateTime.now());
+        user.setActive(false);
+        user.setPassword(computePasswordHash(user.getPassword()));
+        return user;
+    }
+
+    //TODO what to do with boolean fields - false as default
+    public User updateEntity(User foundUser, User toUpdateUser) {
+        Optional.ofNullable(toUpdateUser.getUsername()).ifPresent(foundUser::setUsername);
+        Optional.ofNullable(toUpdateUser.getEmail()).ifPresent(foundUser::setEmail);
+        Optional.ofNullable(toUpdateUser.getPassword()).ifPresent(value -> foundUser.setPassword(computePasswordHash(value)));
+        Optional.ofNullable(toUpdateUser.getRoles()).ifPresent(foundUser::setRoles);
+        Optional.ofNullable(toUpdateUser.getArtistsId()).ifPresent(foundUser::setArtistsId);
+        foundUser.setLastUpdateDate(LocalDateTime.now());
+        return foundUser;
     }
 
     private String computePasswordHash(String toHash) {
@@ -113,8 +150,11 @@ public class UserServiceImpl implements UserService {
                         .id(u.getId())
                         .username(u.getUsername())
                         .email(u.getEmail())
+                        .creationDate(u.getCreationDate())
+                        .lastUpdateDate(u.getLastUpdateDate())
                         .isActive(u.isActive())
                         .roles(u.getRoles())
+                        .artistsId(u.getArtistsId())
                         .build());
     }
 }

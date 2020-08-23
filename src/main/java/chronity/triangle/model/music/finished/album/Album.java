@@ -32,6 +32,8 @@ public class Album implements Dto {
     private List<String> songsId;
     private List<String> artistsId;
 
+    private String creatorArtistId;
+
     public Album(String name,
                  String description,
                  boolean isReleased,
@@ -41,7 +43,8 @@ public class Album implements Dto {
                  String cdCover,
                  List<String> links,
                  List<String> songsId,
-                 List<String> artistsId) {
+                 List<String> artistsId,
+                 String creatorArtistId) {
         this.name = name;
         this.description = description;
         this.isReleased = isReleased;
@@ -52,5 +55,6 @@ public class Album implements Dto {
         this.links = links;
         this.songsId = songsId;
         this.artistsId = artistsId;
+        this.creatorArtistId = creatorArtistId;
     }
 }

@@ -21,12 +21,12 @@ public class UserController {
     UserService userService;
 
     @GetMapping
-    public ResponseDto<List<UserDto>> getAll(){
+    public ResponseDto<List<UserDto>> getAll() {
         return ResponseDto.create(userService.getAll(), ServletUriComponentsBuilder.fromCurrentRequest());
     }
 
     @GetMapping(value = ApiPaths.Users.BY_USERNAME)
-    public ResponseDto<UserDto> getByUsername(@PathVariable("username") String username) {
+    public ResponseDto<UserDto> getByUsername(@PathVariable(ApiPaths.Users.PathParams.USERNAME) String username) {
         var foundUser = userService.getByUsername(username);
         return ResponseDto.create(foundUser, ServletUriComponentsBuilder.fromCurrentRequestUri());
     }
@@ -34,24 +34,17 @@ public class UserController {
     @PostMapping
     public ResponseEntity<ResponseDto<UserDto>> add(@RequestBody User user) {
         var addedUser = userService.add(user);
-        var responseDto = ResponseDto.create(
-                addedUser,
-                ServletUriComponentsBuilder.fromCurrentRequest(),
-                ApiPaths.Users.BY_USERNAME,
-                addedUser.getUsername()
-        );
+        var responseDto = createAddResponseDto(addedUser);
         return JsonResponse.status(HttpStatus.CREATED).msg(responseDto);
     }
 
     @PutMapping(value = ApiPaths.Users.BY_USERNAME)
-    public ResponseEntity<ResponseDto<UserDto>> update(@PathVariable("username") String username, @RequestBody User user) {
-        var updatedUser = userService.update(user);
-        var responseDto = ResponseDto.create(
-                updatedUser,
-                ServletUriComponentsBuilder.fromCurrentRequest(),
-                ApiPaths.Users.BY_USERNAME,
-                updatedUser.getUsername()
-        );
+    public ResponseEntity<ResponseDto<UserDto>> update(
+            @PathVariable(ApiPaths.Users.PathParams.USERNAME) String username,
+            @RequestBody User user
+    ) {
+        var updatedUser = userService.updateByUsername(username, user);
+        var responseDto = ResponseDto.create(updatedUser, ServletUriComponentsBuilder.fromCurrentRequest());
         return JsonResponse.status(HttpStatus.OK).msg(responseDto);
     }
 
@@ -59,5 +52,14 @@ public class UserController {
     public ResponseEntity<String> deleteByUsername(@PathVariable("username") String username) {
         userService.deleteByUsername(username);
         return JsonResponse.status(HttpStatus.NO_CONTENT).noMsg();
+    }
+
+    private ResponseDto<UserDto> createAddResponseDto(UserDto userDto) {
+        return ResponseDto.create(
+                userDto,
+                ServletUriComponentsBuilder.fromCurrentRequest(),
+                ApiPaths.Users.BY_USERNAME,
+                userDto.getUsername()
+        );
     }
 }

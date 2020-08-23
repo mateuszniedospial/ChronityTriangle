@@ -9,14 +9,14 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.net.URL;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Setter
 @ToString
 @EqualsAndHashCode
-@Document(collection = "profiles")
+@Document(collection = "artists")
 public class Artist implements Dto {
     @Id
     private String id;
@@ -27,8 +27,10 @@ public class Artist implements Dto {
     private String image;
     private List<String> genres;
 
-    private LocalDate creationDate;
-    private LocalDate lastVisitDate;
+    private LocalDateTime creationDate;
+    private LocalDateTime lastUpdateDate;
+
+    private LocalDateTime lastVisitDate;
 
     private List<URL> links;
 
@@ -48,8 +50,9 @@ public class Artist implements Dto {
                   String description,
                   String image,
                   List<String> genres,
-                  LocalDate creationDate,
-                  LocalDate lastVisitDate,
+                  LocalDateTime creationDate,
+                  LocalDateTime lastUpdateDate,
+                  LocalDateTime lastVisitDate,
                   List<URL> links,
                   boolean isOpenForCollabs,
                   String userId,
@@ -65,6 +68,7 @@ public class Artist implements Dto {
         this.image = image;
         this.genres = genres;
         this.creationDate = creationDate;
+        this.lastUpdateDate = lastUpdateDate;
         this.lastVisitDate = lastVisitDate;
         this.links = links;
         this.isOpenForCollabs = isOpenForCollabs;
